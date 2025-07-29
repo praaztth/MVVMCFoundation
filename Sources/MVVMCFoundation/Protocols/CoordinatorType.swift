@@ -8,13 +8,12 @@
 import Foundation
 import UIKit
 
-public protocol CoordinatorType: CoordinatorHierarchy {
+public protocol CoordinatorType {
     associatedtype Screen
-    associatedtype View: UIViewController
     
-    var viewController: View? { get }
+    var viewController: UIViewController? { get }
     
-    func start() -> View
+    func start() -> UIViewController
     @MainActor func routeTo(_ screen: Screen)
 }
 

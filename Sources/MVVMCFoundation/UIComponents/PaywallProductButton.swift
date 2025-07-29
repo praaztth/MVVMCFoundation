@@ -28,14 +28,12 @@ public class PaywallProductButton: UIButton {
         let view = UIView()
         view.layer.cornerRadius = 12
         view.layer.borderWidth = 1.5
-//        view.layer.borderColor = App.colors.purole.cgColor
         return view
     }()
     
     let smallCircle: UIView = {
         let view = UIView()
         view.layer.cornerRadius = 7
-//        view.backgroundColor = App.colors.purole
         return view
     }()
     
@@ -68,6 +66,7 @@ public class PaywallProductButton: UIButton {
         circleView.isUserInteractionEnabled = false
         bigCircle.isUserInteractionEnabled = false
         smallCircle.isUserInteractionEnabled = false
+        smallCircle.backgroundColor = self.selectedColor
         circleView.addSubview(bigCircle)
         circleView.addSubview(smallCircle)
         
@@ -106,11 +105,11 @@ public class PaywallProductButton: UIButton {
     func updateAppearance() {
         if isSelected {
             bigCircle.layer.borderColor = self.selectedColor.cgColor
-            smallCircle.backgroundColor = self.selectedColor
+            smallCircle.isHidden = false
             layer.borderWidth = 1.5
         } else {
             bigCircle.layer.borderColor = self.unselectedColor.cgColor
-            smallCircle.backgroundColor = self.unselectedColor
+            smallCircle.isHidden = true
             layer.borderWidth = 0
         }
     }

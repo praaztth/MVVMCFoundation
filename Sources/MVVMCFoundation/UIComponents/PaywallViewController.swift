@@ -13,6 +13,7 @@ public class PaywallView: UIView {
     public struct Configuration {
         let backgroundImage: UIImage
         let title: String
+        let titleFont: UIFont
         let buttonText: String
         let buttonCornerRadius: CGFloat
         let textColor: UIColor
@@ -21,11 +22,13 @@ public class PaywallView: UIView {
         let descriptionImage: UIImage?
         let descriptionHeight: CGFloat?
         let closeButtonColor: UIColor
+        let plainButtonsColor: UIColor
         let gradientColor: UIColor
         
-        public init(backgroundImage: UIImage, title: String, buttonText: String, buttonCornerRadius: CGFloat, textColor: UIColor, tintColor: UIColor, descriptionStrings: [String]?, descriptionImage: UIImage?, descriptionHeight: CGFloat?, closeButtonColor: UIColor, gradientColor: UIColor) {
+        public init(backgroundImage: UIImage, title: String, titleFont: UIFont, buttonText: String, buttonCornerRadius: CGFloat, textColor: UIColor, tintColor: UIColor, descriptionStrings: [String]?, descriptionImage: UIImage?, descriptionHeight: CGFloat?, closeButtonColor: UIColor, plainButtonsColor: UIColor, gradientColor: UIColor) {
             self.backgroundImage = backgroundImage
             self.title = title
+            self.titleFont = titleFont
             self.buttonText = buttonText
             self.buttonCornerRadius = buttonCornerRadius
             self.textColor = textColor
@@ -34,6 +37,7 @@ public class PaywallView: UIView {
             self.descriptionImage = descriptionImage
             self.descriptionHeight = descriptionHeight
             self.closeButtonColor = closeButtonColor
+            self.plainButtonsColor = plainButtonsColor
             self.gradientColor = gradientColor
         }
     }
@@ -87,6 +91,7 @@ public class PaywallView: UIView {
     public func configure(with configuration: Configuration) {
         titleLabel.text = configuration.title
         titleLabel.textColor = configuration.textColor
+        titleLabel.font = configuration.titleFont
         
         configuration.descriptionStrings?.forEach { string in
             let view = getDescriptionItem(text: string, image: configuration.descriptionImage, color: configuration.textColor)
@@ -107,6 +112,10 @@ public class PaywallView: UIView {
         
         
         gradientView.setGradient(colors: [configuration.gradientColor.withAlphaComponent(0).cgColor, configuration.gradientColor.cgColor])
+        
+        [termsOfUseButton, restorePurchasesButton, privacyPolicyButton].forEach { button in
+            button.setTitleColor(configuration.plainButtonsColor, for: .normal)
+        }
     }
     
     func setupCloseButton() {

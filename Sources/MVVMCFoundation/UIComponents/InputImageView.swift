@@ -44,6 +44,12 @@ public class InputImageView: UIImageView {
         fatalError("init(coder:) has not been implemented")
     }
     
+    public override func layoutSubviews() {
+        layer.addSublayer(dashedBorder)
+        dashedBorder.path = UIBezierPath(roundedRect: bounds, cornerRadius: layer.cornerRadius).cgPath
+        dashedBorder.frame = bounds
+    }
+    
     public func configure(with configuration: Configuration) {
         textLabel.text = configuration.text
         textLabel.textColor = configuration.textColor
