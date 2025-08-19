@@ -18,6 +18,8 @@ public class PaywallProductButton: UIButton {
     
     var unselectedColor: UIColor!
     var selectedColor: UIColor!
+    var selectedBorderWidth: CGFloat!
+    var unselectedBorderWidth: CGFloat!
     
     var leftView: UIView!
     var rightView: UIView!
@@ -37,9 +39,9 @@ public class PaywallProductButton: UIButton {
         return view
     }()
     
-    public init(leftTitle: String, leftDescription: String, rightTitle: String, rightDescription: String, tintColor: UIColor, secondColor: UIColor, backgroundColor: UIColor) {
+    public init(leftTitle: String, leftDescription: String, rightTitle: String, rightDescription: String, tintColor: UIColor, secondColor: UIColor, backgroundColor: UIColor, titleFont: UIFont? = nil, subtitleFont: UIFont? = nil, selectedBorderWidth: CGFloat = 1.5, unselectedBorderWidth: CGFloat = 0) {
         super.init(frame: .zero)
-        setupViews(leftTitle: leftTitle, leftDescription: leftDescription, rightTitle: rightTitle, rightDescription: rightDescription, tintColor: tintColor, secondColor: secondColor, backgroundColor: backgroundColor)
+        setupViews(leftTitle: leftTitle, leftDescription: leftDescription, rightTitle: rightTitle, rightDescription: rightDescription, tintColor: tintColor, secondColor: secondColor, backgroundColor: backgroundColor, titleFont: titleFont, subtitleFont: subtitleFont, selectedBorderWidth: selectedBorderWidth, unselectedBorderWidth: unselectedBorderWidth)
         activateConstraints()
         updateAppearance()
         
@@ -50,7 +52,7 @@ public class PaywallProductButton: UIButton {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func setupViews(leftTitle: String, leftDescription: String, rightTitle: String, rightDescription: String, tintColor: UIColor, secondColor: UIColor, backgroundColor: UIColor) {
+    func setupViews(leftTitle: String, leftDescription: String, rightTitle: String, rightDescription: String, tintColor: UIColor, secondColor: UIColor, backgroundColor: UIColor, titleFont: UIFont?, subtitleFont: UIFont?, selectedBorderWidth: CGFloat, unselectedBorderWidth: CGFloat) {
         layer.cornerRadius = 16
         self.backgroundColor = backgroundColor
         bigCircle.layer.borderColor = tintColor.cgColor
@@ -59,9 +61,11 @@ public class PaywallProductButton: UIButton {
         
         self.unselectedColor = secondColor
         self.selectedColor = tintColor
+        self.selectedBorderWidth = selectedBorderWidth
+        self.unselectedBorderWidth = unselectedBorderWidth
         
-        leftView = verticalLabelsView(title: leftTitle, subtitle: leftDescription, textAligment: .left)
-        rightView = verticalLabelsView(title: rightTitle, subtitle: rightDescription, textAligment: .right)
+        leftView = verticalLabelsView(title: leftTitle, subtitle: leftDescription, textAligment: .left, titleFont: titleFont, subtitleFont: subtitleFont, titleColor: tintColor)
+        rightView = verticalLabelsView(title: rightTitle, subtitle: rightDescription, textAligment: .right, titleFont: titleFont, subtitleFont: subtitleFont, titleColor: tintColor)
         
         circleView.isUserInteractionEnabled = false
         bigCircle.isUserInteractionEnabled = false
@@ -106,11 +110,11 @@ public class PaywallProductButton: UIButton {
         if isSelected {
             bigCircle.layer.borderColor = self.selectedColor.cgColor
             smallCircle.isHidden = false
-            layer.borderWidth = 1.5
+            layer.borderWidth = self.selectedBorderWidth
         } else {
             bigCircle.layer.borderColor = self.unselectedColor.cgColor
             smallCircle.isHidden = true
-            layer.borderWidth = 0
+            layer.borderWidth = self.unselectedBorderWidth
         }
     }
     
@@ -121,9 +125,9 @@ public class PaywallProductButton: UIButton {
         }
     }
     
-    func verticalLabelsView(title: String, subtitle: String, textAligment: NSTextAlignment) -> UIView {
-        let titleLabel = SwiftHelper.uiHelper.customLabel(text: title, font: .systemFont(ofSize: 18, weight: .bold), color: .white, textAligment: textAligment, numberLines: 1)
-        let subtitleLabel = SwiftHelper.uiHelper.customLabel(text: subtitle, font: .systemFont(ofSize: 12, weight: .regular), color: .white, textAligment: textAligment, numberLines: 1)
+    func verticalLabelsView(title: String, subtitle: String, textAligment: NSTextAlignment, titleFont: UIFont?, subtitleFont: UIFont?, titleColor: UIColor?) -> UIView {
+        let titleLabel = SwiftHelper.uiHelper.customLabel(text: title, font: titleFont ?? .systemFont(ofSize: 18, weight: .bold), color: titleColor ?? .white, textAligment: textAligment, numberLines: 1)
+        let subtitleLabel = SwiftHelper.uiHelper.customLabel(text: subtitle, font: subtitleFont ?? .systemFont(ofSize: 12, weight: .regular), color: titleColor ?? .white, textAligment: textAligment, numberLines: 1)
         
         let view = UIView()
         view.isUserInteractionEnabled = false

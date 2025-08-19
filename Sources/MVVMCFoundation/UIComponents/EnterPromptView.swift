@@ -17,14 +17,20 @@ public final class EnterPromptView: UIView {
         let backgroundColor: UIColor
         let placeholderColor: UIColor
         let cornerRadius: CGFloat
+        let textColor: UIColor
+        let labelText: String
+        let labelColor: UIColor
         
-        public init(placeholderText: String, labelFont: UIFont, textViewFont: UIFont, backgroundColor: UIColor, placeholderColor: UIColor, cornerRadius: CGFloat) {
+        public init(placeholderText: String, labelFont: UIFont, textViewFont: UIFont, backgroundColor: UIColor, placeholderColor: UIColor, cornerRadius: CGFloat, textColor: UIColor? = nil, labelText: String? = nil, labelColor: UIColor? = nil) {
             self.placeholderText = placeholderText
             self.labelFont = labelFont
             self.textViewFont = textViewFont
             self.backgroundColor = backgroundColor
             self.placeholderColor = placeholderColor
             self.cornerRadius = cornerRadius
+            self.textColor = textColor ?? UIColor.white
+            self.labelText = labelText ?? "Enter Promt"
+            self.labelColor = labelColor ?? UIColor.white
         }
     }
     
@@ -33,6 +39,8 @@ public final class EnterPromptView: UIView {
     
     var placeholderText: String = ""
     var placeholderColor: UIColor = .white
+    var textColor: UIColor = .white
+    
     public var text: String {
         textView.text == placeholderText && textView.textColor == placeholderColor ? "" : textView.text
     }
@@ -54,8 +62,6 @@ public final class EnterPromptView: UIView {
     
     func setupTitleLabel() {
         addSubview(titleLabel)
-        titleLabel.text = "Enter Promt"
-        titleLabel.textColor = .white
         titleLabel.numberOfLines = 1
     }
     
@@ -82,9 +88,12 @@ public final class EnterPromptView: UIView {
     
     public func configure(with configuration: Configuration) {
         self.placeholderText = configuration.placeholderText
+        self.placeholderColor = configuration.placeholderColor
+        titleLabel.text = configuration.labelText
+        titleLabel.textColor = configuration.labelColor
         titleLabel.font = configuration.labelFont
         textView.font = configuration.textViewFont
-        self.placeholderColor = configuration.placeholderColor
+        self.textColor = configuration.textColor
         backgroundColor = configuration.backgroundColor
         layer.cornerRadius = configuration.cornerRadius
         
@@ -106,7 +115,7 @@ public final class EnterPromptView: UIView {
     public func removePlacehoderState() {
         if textView.text == self.placeholderText && textView.textColor == self.placeholderColor {
             textView.text = ""
-            textView.textColor = .white
+            textView.textColor = self.textColor
         }
     }
 }

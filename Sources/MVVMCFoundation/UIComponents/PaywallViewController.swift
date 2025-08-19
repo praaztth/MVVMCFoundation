@@ -16,6 +16,7 @@ public class PaywallView: UIView {
         let titleFont: UIFont
         let buttonText: String
         let buttonCornerRadius: CGFloat
+        let buttonTitleColor: UIColor
         let textColor: UIColor
         let tintColor: UIColor
         let descriptionStrings: [String]?
@@ -24,13 +25,15 @@ public class PaywallView: UIView {
         let closeButtonColor: UIColor
         let plainButtonsColor: UIColor
         let gradientColor: UIColor
+        let descriptionFont: UIFont?
         
-        public init(backgroundImage: UIImage, title: String, titleFont: UIFont, buttonText: String, buttonCornerRadius: CGFloat, textColor: UIColor, tintColor: UIColor, descriptionStrings: [String]?, descriptionImage: UIImage?, descriptionHeight: CGFloat?, closeButtonColor: UIColor, plainButtonsColor: UIColor, gradientColor: UIColor) {
+        public init(backgroundImage: UIImage, title: String, titleFont: UIFont, buttonText: String, buttonCornerRadius: CGFloat, buttonTitleColor: UIColor? = nil, textColor: UIColor, tintColor: UIColor, descriptionStrings: [String]?, descriptionImage: UIImage?, descriptionHeight: CGFloat?, closeButtonColor: UIColor, plainButtonsColor: UIColor, gradientColor: UIColor, descriptionFont: UIFont? = nil) {
             self.backgroundImage = backgroundImage
             self.title = title
             self.titleFont = titleFont
             self.buttonText = buttonText
             self.buttonCornerRadius = buttonCornerRadius
+            self.buttonTitleColor = buttonTitleColor ?? textColor
             self.textColor = textColor
             self.tintColor = tintColor
             self.descriptionStrings = descriptionStrings
@@ -39,6 +42,7 @@ public class PaywallView: UIView {
             self.closeButtonColor = closeButtonColor
             self.plainButtonsColor = plainButtonsColor
             self.gradientColor = gradientColor
+            self.descriptionFont = descriptionFont
         }
     }
     
@@ -56,10 +60,10 @@ public class PaywallView: UIView {
         }
     }
     
-    var gradientView = GradientView()
-    let backgroundImageView = SwiftHelper.uiHelper.customImageView(image: UIImage(), isClipped: true, mode: .scaleAspectFill, cornerRadius: nil, borderWidth: nil, borderColor: nil)
-    let titleLabel = SwiftHelper.uiHelper.customLabel(text: "", font: .systemFont(ofSize: 29), color: .label, textAligment: nil, numberLines: 0)
-    let descriptionViewStack = UIStackView()
+    public var gradientView = GradientView()
+    public let backgroundImageView = SwiftHelper.uiHelper.customImageView(image: UIImage(), isClipped: true, mode: .scaleAspectFill, cornerRadius: nil, borderWidth: nil, borderColor: nil)
+    public let titleLabel = SwiftHelper.uiHelper.customLabel(text: "", font: .systemFont(ofSize: 29), color: .label, textAligment: nil, numberLines: 0)
+    public let descriptionViewStack = UIStackView()
     public let optionButtonsStack = UIStackView()
     public let closeButton = UIButton()
     public let subscribeButton = UIButton()
@@ -94,7 +98,7 @@ public class PaywallView: UIView {
         titleLabel.font = configuration.titleFont
         
         configuration.descriptionStrings?.forEach { string in
-            let view = getDescriptionItem(text: string, image: configuration.descriptionImage, color: configuration.textColor)
+            let view = getDescriptionItem(text: string, image: configuration.descriptionImage, color: configuration.textColor, font: configuration.descriptionFont)
             descriptionViewStack.addArrangedSubview(view)
         }
         if let height = configuration.descriptionHeight {
@@ -105,7 +109,7 @@ public class PaywallView: UIView {
         
         closeButton.tintColor = configuration.closeButtonColor
         backgroundImageView.image = configuration.backgroundImage
-        subscribeButton.setTitleColor(configuration.textColor, for: .normal)
+        subscribeButton.setTitleColor(configuration.buttonTitleColor, for: .normal)
         subscribeButton.backgroundColor = configuration.tintColor
         subscribeButton.setTitle(configuration.buttonText, for: .normal)
         subscribeButton.layer.cornerRadius = configuration.buttonCornerRadius
@@ -235,9 +239,9 @@ public class PaywallView: UIView {
         }
     }
     
-    func getDescriptionItem(text: String, image: UIImage?, color: UIColor) -> UIView {
+    func getDescriptionItem(text: String, image: UIImage?, color: UIColor, font: UIFont?) -> UIView {
         let label = UILabel()
-        label.font = .systemFont(ofSize: 16, weight: .medium)
+        label.font = font != nil ? font : .systemFont(ofSize: 16, weight: .medium)
         label.textColor = color
         label.text = text
         

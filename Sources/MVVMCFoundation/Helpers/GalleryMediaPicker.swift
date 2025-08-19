@@ -11,7 +11,7 @@ import RxSwift
 
 public final class GalleryMediaPicker {
     public static func displayPicker(from viewController: UIViewController, filter: PHPickerFilter, with delegate: PHPickerViewControllerDelegate) {
-            PHPhotoLibrary.requestAuthorization { status in
+        PHPhotoLibrary.requestAuthorization { status in
             guard status == .authorized || status == .limited else {
                 return
             }
