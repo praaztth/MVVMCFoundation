@@ -8,6 +8,7 @@
 import Foundation
 import UIKit
 import SwiftHelper
+import RxSwift
 
 public class InputImageView: UIImageView {
     public struct Configuration {
@@ -104,6 +105,13 @@ public class InputImageView: UIImageView {
     
     public func setImage(_ image: UIImage) {
         self.image = image
+        emptyStackView.isHidden = true
+        if let index = layer.sublayers?.firstIndex(where: { $0 == dashedBorder }) {
+            layer.sublayers?.remove(at: index)
+        }
+    }
+    
+    public func hideEmptyView() {
         emptyStackView.isHidden = true
         if let index = layer.sublayers?.firstIndex(where: { $0 == dashedBorder }) {
             layer.sublayers?.remove(at: index)

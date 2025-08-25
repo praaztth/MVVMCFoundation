@@ -5,30 +5,33 @@
 //  Created by катенька on 29.07.2025.
 //
 
-
+import Foundation
 import RealmSwift
 import PixVerseAPI
 
-final class VideoResultObject: Object {
-    @Persisted(primaryKey: true) var id: Int
-    @Persisted var status: String
-    @Persisted var video_url: String?
+final public class VideoResultObject: Object {
+    @Persisted(primaryKey: true) public var id: Int
+    @Persisted public var status: String
+    @Persisted public var video_url: String?
+    @Persisted public var date: Date
     
-    convenience init(id: Int, status: String, video_url: String?) {
+    public convenience init(id: Int, status: String, video_url: String?) {
         self.init()
         self.id = id
         self.status = status
         self.video_url = video_url
+        self.date = Date()
     }
     
-    convenience init(id: Int, from model: VideoResult) {
+    public convenience init(id: Int, from model: VideoResult) {
         self.init()
         self.id = id
         self.status = model.status
         self.video_url = model.video_url
+        self.date = Date()
     }
     
-    func convertToDTO() -> VideoResult {
+    public func convertToDTO() -> VideoResult {
         return VideoResult(status: self.status, video_url: self.video_url)
     }
 }

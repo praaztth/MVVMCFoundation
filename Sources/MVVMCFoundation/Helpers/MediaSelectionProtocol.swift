@@ -13,7 +13,7 @@ import RxRelay
 
 public protocol MediaSelectionProtocol: PHPickerViewControllerDelegate {
     var selectedImageRelay: BehaviorRelay<(UIImage, String)?> { get }
-    var localIdentifierRelay: PublishRelay<String>? { get }
+//    var localIdentifierRelay: PublishRelay<String>? { get }
     var viewDisposeBag: DisposeBag { get }
 }
 
@@ -23,11 +23,11 @@ public extension MediaSelectionProtocol {
         
         guard let result = results.first else { return }
         
-        if let localIdentifier = result.assetIdentifier {
-            localIdentifierRelay?.accept(localIdentifier)
-        } else {
-            print("\(#file) no local identifier")
-        }
+//        if let localIdentifier = result.assetIdentifier {
+//            localIdentifierRelay?.accept(localIdentifier)
+//        } else {
+//            print("\(#file) no local identifier")
+//        }
         
         GalleryMediaPicker.handlePickedResults(ofType: UIImage.self, typeIdentifiers: [UTType.image.identifier], result: result)
             .observe(on: MainScheduler.instance)

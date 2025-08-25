@@ -12,7 +12,7 @@ import SnapKit
 public final class EnterPromptView: UIView {
     public struct Configuration {
         let placeholderText: String
-        let labelFont: UIFont
+        let labelFont: UIFont?
         let textViewFont: UIFont
         let backgroundColor: UIColor
         let placeholderColor: UIColor
@@ -21,7 +21,7 @@ public final class EnterPromptView: UIView {
         let labelText: String
         let labelColor: UIColor
         
-        public init(placeholderText: String, labelFont: UIFont, textViewFont: UIFont, backgroundColor: UIColor, placeholderColor: UIColor, cornerRadius: CGFloat, textColor: UIColor? = nil, labelText: String? = nil, labelColor: UIColor? = nil) {
+        public init(placeholderText: String, labelFont: UIFont? = nil, textViewFont: UIFont, backgroundColor: UIColor, placeholderColor: UIColor, cornerRadius: CGFloat, textColor: UIColor? = nil, labelText: String? = nil, labelColor: UIColor? = nil) {
             self.placeholderText = placeholderText
             self.labelFont = labelFont
             self.textViewFont = textViewFont
@@ -80,7 +80,7 @@ public final class EnterPromptView: UIView {
         
         textView.snp.makeConstraints { make in
             make.top.equalTo(titleLabel.snp.bottom).offset(14)
-            make.bottom.equalToSuperview().inset(-14)
+            make.bottom.equalToSuperview().offset(-14)
             make.leading.equalToSuperview().offset(20)
             make.trailing.equalToSuperview().offset(-20)
         }
@@ -89,13 +89,18 @@ public final class EnterPromptView: UIView {
     public func configure(with configuration: Configuration) {
         self.placeholderText = configuration.placeholderText
         self.placeholderColor = configuration.placeholderColor
-        titleLabel.text = configuration.labelText
-        titleLabel.textColor = configuration.labelColor
-        titleLabel.font = configuration.labelFont
         textView.font = configuration.textViewFont
         self.textColor = configuration.textColor
         backgroundColor = configuration.backgroundColor
         layer.cornerRadius = configuration.cornerRadius
+        
+        if configuration.labelFont != nil {
+            titleLabel.text = configuration.labelText
+            titleLabel.textColor = configuration.labelColor
+            titleLabel.font = configuration.labelFont
+        } else {
+            titleLabel.isHidden = true
+        }
         
         setPlacehoderState()
     }
