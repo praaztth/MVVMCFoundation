@@ -93,21 +93,6 @@ public final class SaveToGalleryHelper {
             }
     }
     
-//    public static func saveVideoToDocuments(url: URL, fileName: String) -> URL? {
-//        let fileManager = FileManager.default
-//        let directory = fileManager.temporaryDirectory
-//        let fileURL = directory.appendingPathComponent(fileName)
-//        
-//        do {
-//            try fileManager.copyItem(at: url, to: fileURL)
-//            print("video saved successfully")
-//            return fileURL
-//        } catch {
-//            print("saving video to directory failed with error: \(error)")
-//            return nil
-//        }
-//    }
-    
     public static func downloadVideo(from url: URL) -> Single<URL> {
         let destination: DownloadRequest.Destination = { _, _ in
             let tempDirectory = FileManager.default.temporaryDirectory

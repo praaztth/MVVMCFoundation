@@ -129,10 +129,4 @@ public class InputImageView: UIImageView {
         dashedBorder.path = UIBezierPath(roundedRect: bounds, cornerRadius: layer.cornerRadius).cgPath
         dashedBorder.frame = bounds
     }
-    
-    public func getTapGestureRecognizer() -> UITapGestureRecognizer {
-        let tapGesture = UITapGestureRecognizer()
-        addGestureRecognizer(tapGesture)
-        return tapGesture
-    }
 }
