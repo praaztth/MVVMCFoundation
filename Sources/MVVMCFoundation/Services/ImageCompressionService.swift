@@ -17,7 +17,7 @@ public final class JPEGCompressionService: @preconcurrency ImageCompressionServi
     public init() {}
     
     @MainActor
-    public func compressImageData(_ data: Data, maxFileSize: Int, targetSize: CGSize?) -> Data? {
+    public func compressImageData(_ data: Data, maxFileSize: Int, targetSize: CGSize? = nil) -> Data? {
         guard var image = UIImage(data: data) else { return nil }
         
         var size = image.size

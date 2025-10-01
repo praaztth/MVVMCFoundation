@@ -36,7 +36,6 @@ public class VideoCacheService {
             
         } else {
             return downloadVideo(from: url, to: cacheFilePath)
-                .do(onSuccess: { [weak self] _ in print(self?.cacheSize()) })
         }
     }
     
