@@ -39,6 +39,36 @@ public class VideoCacheService {
         }
     }
     
+    public func clearCache() -> Single<Void> {
+        Single.create { single in
+            do {
+                try FileManager.default.removeItem(at: self.cacheDirectory)
+                try FileManager.default.createDirectory(at: self.cacheDirectory, withIntermediateDirectories: true)
+                
+                single(.success(()))
+                
+            } catch {
+                single(.failure(error))
+            }
+            
+            return Disposables.create()
+        }
+    }
+    
+    public func cacheSize() -> Int64 {
+        var size: Int64 = 0
+        
+        if let files = try? FileManager.default.contentsOfDirectory(at: cacheDirectory, includingPropertiesForKeys: [.fileSizeKey]) {
+            for file in files {
+                if let fileSize = try? file.resourceValues(forKeys: [.fileSizeKey]).fileSize {
+                    size += Int64(fileSize)
+                }
+            }
+        }
+        
+        return size
+    }
+    
     private func downloadVideo(from remoteURL: URL, to localURL: URL) -> Single<URL> {
         Single.create { single in
             let task = URLSession.shared.downloadTask(with: remoteURL) { url, _, error in
@@ -63,19 +93,5 @@ public class VideoCacheService {
                 task.cancel()
             }
         }
-    }
-    
-    public func cacheSize() -> Int64 {
-        var size: Int64 = 0
-        
-        if let files = try? FileManager.default.contentsOfDirectory(at: cacheDirectory, includingPropertiesForKeys: [.fileSizeKey]) {
-            for file in files {
-                if let fileSize = try? file.resourceValues(forKeys: [.fileSizeKey]).fileSize {
-                    size += Int64(fileSize)
-                }
-            }
-        }
-        
-        return size
     }
 }
