@@ -10,6 +10,7 @@ import Foundation
 import PixVerseAPI
 import RxSwift
 import RealmSwift
+import RxRealm
 import MVVMCFoundation
 
 public final class GenerationService {
@@ -19,7 +20,14 @@ public final class GenerationService {
     
     private init() {}
     
-    public func handleVideoByTemplate(api: PixVerseAPIProtocol, userID: String, bundleID: String, imageData: Data, imageName: String, templateID: String) -> Observable<VideoModel> {
+    public func handleVideoByTemplate(
+        api: PixVerseAPIProtocol,
+        userID: String,
+        bundleID: String,
+        imageData: Data,
+        imageName: String,
+        templateID: String
+    ) -> Observable<VideoModel> {
         let videoResult = api.generateVideo(byTemplateID: templateID, usingImage: imageData, imageName: imageName, userID: userID, appBundle: bundleID)
             .do(onError: { error in print(error) })
             .flatMap { [unowned self] task in
@@ -31,7 +39,12 @@ public final class GenerationService {
         return subject.asObservable()
     }
     
-    public func handleVideoByPrompt(api: PixVerseAPIProtocol, userID: String, bundleID: String, prompt: String) -> Observable<VideoModel> {
+    public func handleVideoByPrompt(
+        api: PixVerseAPIProtocol,
+        userID: String,
+        bundleID: String,
+        prompt: String
+    ) -> Observable<VideoModel> {
         let videoResult = api.generateVideo(from: prompt, userID: userID, appBundle: bundleID)
             .flatMap { [unowned self] task in
                 try self.saveGenerationTask(task)
@@ -42,7 +55,14 @@ public final class GenerationService {
         return subject.asObservable()
     }
     
-    public func handleVideoByPromptImage(api: PixVerseAPIProtocol, userID: String, bundleID: String, prompt: String, imageData: Data, imageName: String) -> Observable<VideoModel> {
+    public func handleVideoByPromptImage(
+        api: PixVerseAPIProtocol,
+        userID: String,
+        bundleID: String,
+        prompt: String,
+        imageData: Data,
+        imageName: String
+    ) -> Observable<VideoModel> {
         let videoResult = api.generateVideo(from: prompt, usingImage: imageData, imageName: imageName, userID: userID, appBundle: bundleID)
             .flatMap { [unowned self] task in
                 try self.saveGenerationTask(task)
@@ -53,7 +73,14 @@ public final class GenerationService {
         return subject.asObservable()
     }
     
-    public func hangleVideoByStyleVideo(api: PixVerseAPIProtocol, userID: String, bundleID: String, videoUrl: URL, videoName: String, styleID: String) -> Observable<VideoModel> {
+    public func hangleVideoByStyleVideo(
+        api: PixVerseAPIProtocol,
+        userID: String,
+        bundleID: String,
+        videoUrl: URL,
+        videoName: String,
+        styleID: String
+    ) -> Observable<VideoModel> {
         let videoResult = api.generateVideo(usingVideo: videoUrl, videoName: videoName, byStyleID: styleID, userID: userID, appBundle: bundleID)
             .flatMap { [unowned self] task in
                 try self.saveGenerationTask(task)
@@ -64,7 +91,13 @@ public final class GenerationService {
         return subject.asObservable()
     }
     
-    public func handleTransitionVideo(api: PixVerseAPIProtocol, userID: String, bundleID: String, firstImageData: Data, firstImageName: String, secondImageData: Data, secondImageName: String, prompt: String) -> Observable<VideoModel> {
+    public func handleTransitionVideo(
+        api: PixVerseAPIProtocol,
+        userID: String,
+        bundleID: String,
+        firstImageData: Data,
+        firstImageName: String,
+        secondImageData: Data, secondImageName: String, prompt: String) -> Observable<VideoModel> {
         let videoResult = api.generateTransitionVideo(firstImageData: firstImageData, firstImageName: firstImageName, secondImageData: secondImageData, secondImageName: secondImageName, prompt: prompt, userID: userID, appBundle: bundleID)
             .flatMap { [unowned self] task in
                 try self.saveGenerationTask(task)
@@ -135,6 +168,29 @@ public final class GenerationService {
                     }
                     return VideoModel(id: videoID, url: url)
                 }
+    }
+    
+    public func continueIncompletedGenerationTasks() {
+        let api = PixVerseAPI.shared
+        
+        do {
+            let realm = try Realm()
+            let objects = realm.objects(VideoGenerationTaskObject.self)
+            
+            objects.toArray().forEach { object in
+                let task = VideoGenerationTask(video_id: object.video_id, detail: object.detail)
+                do {
+                    let disposable = try GenerationService.shared.handleVideoGeneration(task: task, api: api)
+                        .subscribe()
+                        .disposed(by: disposeBag)
+                    
+                } catch {
+                    print(error)
+                }
+            }
+        } catch {
+            print(error)
+        }
     }
     
     private func getPublishSubjectFromObservable<T>(_ observable: Observable<T>) -> PublishSubject<T> {
