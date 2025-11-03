@@ -148,6 +148,7 @@ public final class GenerationService {
             let videoID = String(task.video_id)
         
             return api.handleVideoGenerationStatus(videoID: videoID)
+                .observe(on: ConcurrentDispatchQueueScheduler(qos: .background))
                 .do(onNext: { [unowned self] videoID, videoResult in
                     try self.saveVideo(videoResult, id: videoID)
                 }, onError: {
