@@ -21,7 +21,6 @@ let package = Package(
         .package(url: "https://github.com/ReactiveX/RxSwift.git", .upToNextMajor(from: "6.0.0")),
         .package(url: "https://github.com/Alamofire/Alamofire.git", .upToNextMajor(from: "5.10.0")),
         .package(url: "https://github.com/realm/realm-swift.git", .upToNextMajor(from: "20.0.2")),
-        .package(url: "https://github.com/RxSwiftCommunity/RxRealm", revision: "20575fd1d9e3f7e9197afcbccbc1b902e94cc421"),
         .package(url: "https://github.com/praaztth/PixVerseAPI.git", .upToNextMajor(from: "2.0.0"))
     ],
     targets: [
@@ -36,7 +35,6 @@ let package = Package(
                 .product(name: "RxCocoa", package: "RxSwift"),
                 .product(name: "Alamofire", package: "Alamofire"),
                 .product(name: "RealmSwift", package: "realm-swift"),
-                .product(name: "RxRealm", package: "RxRealm"),
                 .product(name: "PixVerseAPI", package: "PixVerseAPI")
             ]),
     ]
