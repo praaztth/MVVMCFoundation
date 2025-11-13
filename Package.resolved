@@ -1,5 +1,5 @@
 {
-  "originHash" : "7ff0e2cdfeaa966159922f849bc88c42046d806eaab1cb69f8739863da8bf96d",
+  "originHash" : "2d53a2045df8f85c09a245b7b5f46dd477b2b59a749f0ff035d614a561db9447",
   "pins" : [
     {
       "identity" : "alamofire",
@@ -65,20 +65,12 @@
       }
     },
     {
-      "identity" : "rxrealm",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/RxSwiftCommunity/RxRealm",
-      "state" : {
-        "revision" : "20575fd1d9e3f7e9197afcbccbc1b902e94cc421"
-      }
-    },
-    {
       "identity" : "rxswift",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/ReactiveX/RxSwift.git",
       "state" : {
-        "revision" : "5dd1907d64f0d36f158f61a466bab75067224893",
-        "version" : "6.9.0"
+        "revision" : "5004a18539bd68905c5939aa893075f578f4f03d",
+        "version" : "6.9.1"
       }
     },
     {
