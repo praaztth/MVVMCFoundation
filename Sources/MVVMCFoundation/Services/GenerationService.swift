@@ -10,7 +10,7 @@ import Foundation
 import PixVerseAPI
 import RxSwift
 import RealmSwift
-import RxRealm
+//import RxRealm
 import MVVMCFoundation
 
 public final class GenerationService {
@@ -177,9 +177,9 @@ public final class GenerationService {
         do {
             let realm = try Realm()
             let objects = realm.objects(VideoGenerationTaskObject.self)
+            let tasks = objects.map { VideoGenerationTask(video_id: $0.video_id, detail: $0.detail) }
             
-            objects.toArray().forEach { object in
-                let task = VideoGenerationTask(video_id: object.video_id, detail: object.detail)
+            tasks.forEach { task in
                 do {
                     let disposable = try GenerationService.shared.handleVideoGeneration(task: task, api: api)
                         .subscribe()
