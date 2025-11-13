@@ -36,6 +36,7 @@ let package = Package(
                 .product(name: "RxCocoa", package: "RxSwift"),
                 .product(name: "Alamofire", package: "Alamofire"),
                 .product(name: "RealmSwift", package: "realm-swift"),
+                .product(name: "RxRealm", package: "RxRealm"),
                 .product(name: "PixVerseAPI", package: "PixVerseAPI")
             ]),
     ]
