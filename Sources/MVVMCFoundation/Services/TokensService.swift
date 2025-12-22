@@ -37,9 +37,15 @@ public final class TokensService {
             .disposed(by: disposeBag)
     }
     
-    public func fetchTokensCount() -> Observable<Int> {
-        PixVerseAPI.shared.fetchTokensCount(userId: UserSessionService.shared.userID, appId: Bundle.main.bundleIdentifier ?? "")
-            .map { $0.balance }
+    public func fetchTokensCount(callback: @escaping (Int) -> Void) {
+        PixVerseAPI.shared.fetchTokensCount(userId: UserSessionService.shared.userID, appId: Bundle.main.bundleIdentifier ?? "") { result in
+            do {
+                let response = try result.get()
+                callback(response.balance)
+            } catch {
+                print(error)
+            }
+        }
     }
     
     @MainActor
