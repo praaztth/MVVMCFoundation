@@ -47,23 +47,28 @@ public final class GenerationService {
             let taskID = task.video_id
             try? GenerationService.shared.saveGenerationTask(task)
             
-            startCheckingStatus(for: String(taskID)) { [unowned self] result in
-                switch result {
-                case .success(let videoResult):
-                    guard let url = URL(string: videoResult.video_url ?? "") else {
-                        callback(.failure(PixVerseError.generationError(detail: "No video available")))
-                        return
+            // delay for current status from server
+            DispatchQueue.global(qos: .utility).asyncAfter(deadline: .now() + 2) { [unowned self] in
+                startCheckingStatus(for: String(taskID)) { result in
+                    try? GenerationService.shared.removeGenerationTask(with: String(taskID))
+                    
+                    switch result {
+                    case .success(let videoResult):
+                        guard let url = URL(string: videoResult.video_url ?? "") else {
+                            callback(.failure(PixVerseError.generationError(detail: "No video available")))
+                            return
+                        }
+                        
+                        callback(.success(url))
+                        
+                    case .failure(let failure):
+                        self.checkError(error: failure) { pixVerseError in
+                            callback(.failure(pixVerseError))
+                        }
                     }
                     
-                    callback(.success(url))
                     
-                case .failure(let failure):
-                    checkError(error: failure) { pixVerseError in
-                        callback(.failure(pixVerseError))
-                    }
                 }
-                
-                
             }
             
         case .failure(let error):
@@ -106,13 +111,17 @@ public final class GenerationService {
         timer.schedule(deadline: .now(), repeating: 5.0)
 
         timer.setEventHandler { [unowned self] in
-            self.api.checkStatus(requestID: taskId) { result in
+            self.api.checkStatus(requestID: taskId) { [unowned self] result in
                 do {
                     let videoResult = try result.get()
                     try GenerationService.shared.saveVideo(videoResult, id: taskId)
                     
                     if videoResult.status == "success" {
                         callback(.success(videoResult))
+                        self.stopCheckingStatus(for: taskId)
+                    
+                    } else if videoResult.status == "error" {
+                        callback(.failure(NSError(domain: "", code: -1, userInfo: [NSLocalizedDescriptionKey: "Unexpected error during generation"])))
                         self.stopCheckingStatus(for: taskId)
                     }
                     
@@ -140,7 +149,11 @@ public final class GenerationService {
             let tasks = objects.map { VideoGenerationTask(video_id: $0.video_id, detail: $0.detail) }
             
             tasks.forEach { task in
-                startCheckingStatus(for: String(task.video_id)) { _ in }
+                let taskId = String(task.video_id)
+                
+                startCheckingStatus(for: taskId) { _ in
+                    try? GenerationService.shared.removeGenerationTask(with: taskId)
+                }
             }
         } catch {
             print(error)
