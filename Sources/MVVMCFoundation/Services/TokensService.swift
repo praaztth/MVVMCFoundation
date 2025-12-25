@@ -16,7 +16,6 @@ public final class TokensService {
     nonisolated(unsafe) public static let shared = TokensService()
     
     private var _isTokensAvailable: Bool = false
-    private let disposeBag = DisposeBag()
     
     public var isTokensAvailable: Bool {
         get { _isTokensAvailable }
@@ -26,15 +25,9 @@ public final class TokensService {
     
     @MainActor
     public func refreshTokensAvailability() {
-        checkTokensAvailability()
-            .subscribe(onSuccess: { [unowned self] isAvailable in
-                self._isTokensAvailable = isAvailable
-                
-            }, onFailure: { error in
-                print("\(#fileID): \(#function): \(error.localizedDescription)")
-                
-            })
-            .disposed(by: disposeBag)
+        checkTokensAvailability() { [unowned self] isAvailable in
+            self._isTokensAvailable = isAvailable
+        }
     }
     
     public func fetchTokensCount(callback: @escaping (Int) -> Void) {
@@ -49,20 +42,16 @@ public final class TokensService {
     }
     
     @MainActor
-    private func checkTokensAvailability() -> Single<Bool> {
-        Single.create { single in
-            SwiftHelper.apphudHelper.fetchProducts(paywallID: "tokens") { products in
-                for product in products {
-                    guard product.skProduct != nil else {
-                        single(.success(false))
-                        return
-                    }
+    private func checkTokensAvailability(callback: @escaping (Bool) -> Void) {
+        SwiftHelper.apphudHelper.fetchProducts(paywallID: "tokens") { [unowned self] products in
+            for product in products {
+                guard product.skProduct != nil else {
+                    callback(false)
+                    return
                 }
-                
-                single(.success(true))
             }
             
-            return Disposables.create()
+            callback(true)
         }
     }
 }

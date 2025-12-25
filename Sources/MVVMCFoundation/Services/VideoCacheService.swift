@@ -27,31 +27,28 @@ public class VideoCacheService {
     
     private let disposeBag = DisposeBag()
     
-    public func getCachedVideoURL(for url: URL) -> Single<URL> {
+    public func getCachedVideoURL(for url: URL, callback: @escaping (URL?) -> Void) {
         let fileName = url.lastPathComponent
         let cacheFilePath = cacheDirectory.appendingPathComponent(fileName)
         
         if FileManager.default.fileExists(atPath: cacheFilePath.path()) {
-            return Single.just(cacheFilePath)
+            callback(cacheFilePath)
             
         } else {
-            return downloadVideo(from: url, to: cacheFilePath)
+            downloadVideo(from: url, to: cacheFilePath) { url in
+                callback(url)
+            }
         }
     }
     
-    public func clearCache() -> Single<Void> {
-        Single.create { single in
-            do {
-                try FileManager.default.removeItem(at: self.cacheDirectory)
-                try FileManager.default.createDirectory(at: self.cacheDirectory, withIntermediateDirectories: true)
-                
-                single(.success(()))
-                
-            } catch {
-                single(.failure(error))
-            }
+    public func clearCache() {
+        do {
+            try FileManager.default.removeItem(at: self.cacheDirectory)
+            try FileManager.default.createDirectory(at: self.cacheDirectory, withIntermediateDirectories: true)
             
-            return Disposables.create()
+        } catch {
+            Logger.shared.log(error.localizedDescription)
+            print(error)
         }
     }
     
@@ -69,29 +66,22 @@ public class VideoCacheService {
         return size
     }
     
-    private func downloadVideo(from remoteURL: URL, to localURL: URL) -> Single<URL> {
-        Single.create { single in
-            let task = URLSession.shared.downloadTask(with: remoteURL) { url, _, error in
-                guard let url,
-                      error == nil else {
-                    single(.failure(error!))
-                    return
-                }
+    private func downloadVideo(from remoteURL: URL, to localURL: URL, callback: @escaping (URL?) -> Void) {
+        URLSession.shared.downloadTask(with: remoteURL) { url, _, error in
+            guard let url,
+                  error == nil else {
+                callback(nil)
+                return
+            }
+            
+            do {
+                try FileManager.default.moveItem(at: url, to: localURL)
+                callback(localURL)
                 
-                do {
-                    try FileManager.default.moveItem(at: url, to: localURL)
-                    single(.success(localURL))
-                    
-                } catch {
-                    single(.failure(error))
-                }
+            } catch {
+                callback(nil)
+                print(error)
             }
-            
-            task.resume()
-            
-            return Disposables.create {
-                task.cancel()
-            }
-        }
+        }.resume()
     }
 }

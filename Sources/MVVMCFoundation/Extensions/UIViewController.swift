@@ -17,9 +17,9 @@ public extension UIViewController {
         present(alertControllerr, animated: true)
     }
     
-    public func removeFromNavigationStack(viewController: UIViewController) {
+    public func removeFromNavigationStack() {
        if let index = self.navigationController?.viewControllers.firstIndex(where: { $0 == self }) {
            self.navigationController?.viewControllers.remove(at: index)
        }
-   }
+    }
 }
