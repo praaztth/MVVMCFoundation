@@ -74,6 +74,11 @@ public class VideoCacheService {
                 return
             }
             
+            if FileManager.default.fileExists(atPath: localURL.path()) {
+                callback(localURL)
+                return
+            }
+            
             do {
                 try FileManager.default.moveItem(at: url, to: localURL)
                 callback(localURL)
